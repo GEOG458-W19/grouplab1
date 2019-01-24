@@ -74,3 +74,31 @@ legend("topleft", yrange(test)[2], gsub("_", " ", colnames(test)[2:(ncol(test) -
 
 ```
 
+### 3.4 
+Beijing's Population From 1949 to 2017 (data obtained from [All China Data Center](https://www.china-data-online.com/member/macroyr/macroyrtshow.asp))
+```{r, echo = FALSE, warning = FALSE}
+# beijing_pop <- read.csv("Beijing Population.csv", header = TRUE, stringsAsFactors = FALSE)
+shandong_pop <- read.csv("Shandong Population.csv", header = TRUE, stringsAsFactors = FALSE)
+guangdong_pop <- read.csv("Guangdong Population.csv", header = TRUE, stringsAsFactors = FALSE)
+china_pop <- read.csv("National Population.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# Fix Year column in datasets
+# names(beijing_pop)[1] <- "Year"
+# beijing_pop$Year <- 1949:2017
+names(china_pop)[1] <- "Year"
+china_pop$Year <- 1949:2017
+names(shandong_pop)[1] <- "Year"
+shandong_pop$Year <- 1949:2017
+names(guangdong_pop)[1] <- "Year"
+guangdong_pop$Year <- 1949:2017
+
+# Join into one big population dataset
+population <- china_pop %>% left_join(shandong_pop, by = "Year") %>% left_join(guangdong_pop, by = "Year")
+
+plot(population$Year, population$Total_Permanent_Population_Year_End_10000_Persons, type = "l", col = "black", xlab = "Year", ylab = "Per 10,000 Person", main = "National Population")
+  
+plot(population$Year, population$Total_Permanent_Population_Year_End_10000_Persons_Guangdong, type = "l", col = "red", xlab = "Year", ylab = "Per 10,000 Person", main = "Shandong vs Guangzhou Population") +
+  lines(population$Year, population$Total_Permanent_Population_Year_End_10000_Persons_Shandong, type = "l", col = "blue") + 
+  legend("topleft", legend = c("Guangdong", "Shandong"), col = c("red", "blue"))
+
+```
