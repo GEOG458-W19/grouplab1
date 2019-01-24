@@ -55,22 +55,74 @@ c <- 1
 
 ```
 
-### Provinces of Liaoning and Guangdong
+
 ```{r province_graph, echo=FALSE, warning=FALSE}
 
 # Create plot of the Output Ratio
-plot(test$Year, test$Output_Ratio, type = "b", xlab = "Year", ylab = "Output Ratio", main = "Output Ratio of the Provinces", col="black")
+#plot(test$Year, test$Output_Ratio, type = "b", xlab = "Year", ylab = "Output Ratio", main = "Output Ratio of the Provinces", col="black")
 
 # Create plot of the Provinces
-plot(xrange, yrange(test), type = "n", xlab = "Year", ylab = "Per 100 Million RMB") 
-for (i in colnames(test)) {
-  if (i != "Year" & i != "Output_Ratio") {
-    lines(test$Year[!is.na(test[[i]])], test[[i]][!is.na(test[[i]])],
-          type = "l", col = colors[c])
-    c <- c + 1
-  }
-}
-legend("topleft", yrange(test)[2], gsub("_", " ", colnames(test)[2:(ncol(test) - 1)]), col = colors, lty = 1, bty = "n")
+#plot(xrange, yrange(test), type = "n", xlab = "Year", ylab = "Per 100 Million RMB") 
+#for (i in colnames(test)) {
+#  if (i != "Year" & i != "Output_Ratio") {
+#    lines(test$Year[!is.na(test[[i]])], test[[i]][!is.na(test[[i]])],
+#          type = "l", col = colors[c])
+#    c <- c + 1
+#  }
+#}
+#legend("topleft", yrange(test)[2], gsub("_", " ", colnames(test)[2:(ncol(test) - 1)]), col = colors, lty = 1, bty = "n")
 
 ```
 
+
+###3.2
+```{r }
+#load up china data
+china_data=read.csv("China_EO_49to17.csv")
+#create new data frame using china_data to add 2 columns of data, National_Output/Enterprise_Total. uses select()function to select data for output/enterprise
+#and then rowSums() function used on selected data with na.rm=TRUE so it excludes NA data. 
+china_data2 <- mutate(china_data, National_Output_Total=rowSums(select(china_data, contains('Output')),na.rm=TRUE), National_Enterprise_Total=rowSums(select(china_data,contains('Enterprise')),na.rm=TRUE))
+
+#adds shares of total columns for output and enteprise for 3 provinces
+china_data3 <- mutate(china_data2, Beijing_Enterprise_Share=Beijing_Enterprise/National_Enterprise_Total,Beijing_Output_Share=Beijing_Output/National_Output_Total, Tianjin_Enterprise_Share=Tianjin_Enterprise/National_Enterprise_Total,Tianjin_Output_Share=Tianjin_Output/National_Output_Total, Hebei_Enterprise_Share=Hebei_Enterprise/National_Enterprise_Total,Hebei_Output_Share=Hebei_Output/National_Output_Total)
+
+#creates line graphs comparing the shares of total columns for enterprise
+ggplot(data=china_data3, aes(x=Year)) +
+  geom_line(mapping = aes(y=Beijing_Enterprise_Share, color="Beijing Enterprise Share")) +
+  geom_line(mapping = aes(y=Tianjin_Enterprise_Share, color="Tianjin Enterprise Share")) +
+  geom_line(mapping = aes(y=Hebei_Enterprise_Share, color="Hebei Enterprise Share")) +
+  ggtitle("Enterprise Shares of Total") +
+  labs(y="Enterprise",colour = "Provinces")
+
+```
+
+  For the Enterprise Shares of Total graph, it represents data for three provinces for the number of enterprises they had over the years compared to the national enterprise total. For Beijing, they made up a larger portion of the total number of enterprises in the country but the amount fell off dramatically over the years. Tianjin remained pretty low but followed the same pattern as Beijing after ~1950. Hebei started off low but increaed after ~1950 and has remained ahead of Beijing and Tianjin with the number of enteprises they have compared to the national total.
+```{r}
+#creates line graphs comparing the shares of total columns for output
+ggplot(data=china_data3, aes(x=Year)) +
+  geom_line(mapping = aes(y=Beijing_Output_Share, color="Beijing Output Share")) +
+  geom_line(mapping = aes(y=Tianjin_Output_Share, color="Tianjin Output Share")) +
+  geom_line(mapping = aes(y=Hebei_Output_Share, color="Hebei Output Share")) +
+  ggtitle("Output Shares of Total") +
+  labs(y="Output", colour = "Provinces")
+```
+
+  For the Output Shares of Total graph, it represents data for the same three provicnes but it compares their output to the national output total. For all three provinces, their output compared to the national total is very low until around 2010 when they all spike up dramatically. Comapring the outputs to the previous graph with the enterprises, The amount of enterprises seems to have little correlation with the amount of output each province has. For Beijing, their enterprise per share was very high at the start and went down but their output stayed low throughout that time. At around 2000, the enterprise per share for Tianjin and Beijing starts to decrease but despite that, their output share increases dramatically. For Heibei, their enterprise share actually increases during that time but their output share is less compared to Beijing and Tianjin. This could be due to low output per enterprise until after 2010 but the output per enterprise for Heibei did not increase at the same rate as Beijing and Tianjin. 
+  
+###3.3
+```{r}
+
+
+#creates columns for output per enterprise
+china_output_per_enterprise_data <- mutate(china_data2, Beijing_Output_Per_Enterprise=Beijing_Output/Beijing_Enterprise, Tianjin_Output_Per_Enterprise=Tianjin_Output/Tianjin_Enterprise,       Hebei_Output_Per_Enterprise=Hebei_Output/Hebei_Enterprise)
+
+#creates graph for output per enterprise
+ggplot(data=china_output_per_enterprise_data, aes(x=Year)) +
+  geom_line(mapping = aes(y=Beijing_Output_Per_Enterprise, color="Beijing Output Per Enterprise")) +
+  geom_line(mapping = aes(y=Tianjin_Output_Per_Enterprise, color="Tianjin Output Per Enterprise")) +
+  geom_line(mapping = aes(y=Hebei_Output_Per_Enterprise, color="Hebei Output Per Enterprise")) +
+  ggtitle("Output Per Enterprise")+
+  labs(y="Output",colour = "Provinces")
+```
+
+  For the Output Per Enterprise graph, it represents data for the same provinces but it shows the amount of output per enterprise for each province throughout the years. This graph explains the results of the previous two graphs because it shows how incredibly low each enterpises output was until around 1995 where it started to dramatically increase until the last year the data was collected. This explains the increases in output compared to the national output total despite the decrease in enterprises for Beijing and Tianjin. For Heibei, their output per enteprise did not increase as much as the other two and actually starts to fall off at the end which is why that despite their higher enterprise share then the other two, their output share is less. These changes could be due to enterprises becoming more efficient and productive due to a number of reasons like technology, policy, economy, etc. Another factor could be the number of enterprises have decreased due to other enterprises outcompeting or consolidating them and thus increasing their individual outputs despite the decrease in enterprises. 
