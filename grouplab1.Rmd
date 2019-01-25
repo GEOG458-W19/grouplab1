@@ -9,12 +9,13 @@ output: html_document
 library(tidyverse)
 library(dplyr)
 library(tibble)
+library(kableExtra) # for dataframe visualization
+options(warn = -1) # supresses warnings
 knitr::opts_chunk$set(echo = TRUE)
 
 # Read in the dataset
 obj1 <- read.csv("China_EO_49to17.csv")
 data <- as_tibble(obj1)
-
 ```
 
 ## Part 1 - Understanding our Data {.tabset .tabset-fade}
@@ -60,7 +61,7 @@ China obtains national statistics from the Chinese Census that occurs every 5 ye
 # Automates an output ratio column based upon the provinces passed
 provinces_ratio <- function(p1, p2) {
   df <- data %>% select("Year", contains(p1), contains(p2)) %>% arrange(desc(Year))
-  new_col <- if(ncol(df) > 3) { # when p1 or p2 is "Province"
+  new_col <- if (ncol(df) > 3) { # when p1 or p2 is "Province"
     df[[3]] / df[[5]]
   } else { # when p1 or p2 is "Province_Output"
     df[[2]] / df[[3]]
@@ -72,9 +73,9 @@ liao_guang_ratio <- provinces_ratio("Liaoning", "Guangdong")
 shan_guang_ratio <- provinces_ratio("Shandong", "Guangdong")
 shang_guang_ratio <- provinces_ratio("Shanghai", "Guangdong")
 shang_bei_ratio <- provinces_ratio("Shanghai_Output", "Beijing_Output")
-ratio_df <- left_join(liao_guang_ratio, shan_guang_ratio, by = c("Year", "Guangdong_Enterprise", "Guangdong_Output"), suffix = c("_Liao_Guang", "_Shan_Guang")) %>% 
-  left_join(shang_guang_ratio, by = c("Year", "Guangdong_Enterprise", "Guangdong_Output")) %>% 
-  left_join(shang_bei_ratio, by = "Year", suffix = c("_Shang_Guang", "_Shang_Bei")) 
+ratio_df <- left_join(liao_guang_ratio, shan_guang_ratio, by = c("Year", "Guangdong_Enterprise", "Guangdong_Output"), suffix = c("_Liao_Guang", "_Shan_Guang")) %>%
+  left_join(shang_guang_ratio, by = c("Year", "Guangdong_Enterprise", "Guangdong_Output")) %>%
+  left_join(shang_bei_ratio, by = "Year", suffix = c("_Shang_Guang", "_Shang_Bei"))
 
 # Create plot of the Output Ratio
 ggplot(data = na.omit(ratio_df), aes(x = Year)) +
@@ -98,63 +99,64 @@ ggplot(data = na.omit(recent_ratio_df), aes(x = Year)) +
 lgrange <- range(ratio_df$Output_Ratio_Liao_Guang, na.rm = TRUE)
 sggrange <- range(ratio_df$Output_Ratio_Shan_Guang, na.rm = TRUE)
 sigrange <- range(ratio_df$Output_Ratio_Shang_Guang, na.rm = TRUE)
-
 ```
 
   From the charts we can see that the output ratio for Shanghai/Guangdong starts off at the highest point of `r round(sigrange[2], 2)` from `r ratio_df[na.omit(ratio_df$Output_Ratio_Shang_Guang == sigrange[2]), "Year"]`, while the other output ratios of Liaoning/Guangdong peaks at `r round(lgrange[2], 2)` from `r ratio_df[na.omit(ratio_df$Output_Ratio_Liao_Guang == lgrange[2]), "Year"]` and Shandong/Guangdong peaking later than the others at `r round(sggrange[2], 2)` from `r ratio_df[na.omit(ratio_df$Output_Ratio_Shan_Guang == sggrange[2]), "Year"]`. Overall, we can see that Liaoning/Guangdong and Shanghai/Guangdong are both on a downwards spiral as we move from 1950 to the early 2000's showing that Guangdong's output catches up to its contrasting provinces. From the data set that we used, there were many _NA_ values from the early years of 1949 to 1977 which can be visualized in the first chart as the change points for each of the ratios were more spread out. As we take a closer look at the output ratios filtered from the years of 1980 to 2011 we can see that not only does Guangdong's output catches up to its contrasting provinces, passing the 1:1 output ratio (with the exception of Shandong haven risen back up the 1:1 output ratio mark in the recent years), but Guangdong's output ratios in contrast with Liaoning and Shanghai hits below 0.5.
 
 ###3.2
 ```{r echo = FALSE, warning = FALSE}
-#load up china data
+# load up china data
 china_data <- read.csv("China_EO_49to17.csv")
-#create new data frame using china_data to add 2 columns of data, National_Output/Enterprise_Total. uses select()function to select data for output/enterprise
-#and then rowSums() function used on selected data with na.rm=TRUE so it excludes NA data. 
-china_data2 <- mutate(china_data, 
-                      National_Output_Total = rowSums(select(china_data, contains('Output')), na.rm = TRUE), 
-                      National_Enterprise_Total = rowSums(select(china_data, contains('Enterprise')), na.rm = TRUE))
+# create new data frame using china_data to add 2 columns of data, National_Output/Enterprise_Total. uses select()function to select data for output/enterprise
+# and then rowSums() function used on selected data with na.rm=TRUE so it excludes NA data.
+china_data2 <- mutate(china_data,
+  National_Output_Total = rowSums(select(china_data, contains("Output")), na.rm = TRUE),
+  National_Enterprise_Total = rowSums(select(china_data, contains("Enterprise")), na.rm = TRUE)
+)
 
-#adds shares of total columns for output and enteprise for 3 provinces
-china_data3 <- mutate(china_data2, 
-                      Beijing_Enterprise_Share = Beijing_Enterprise / National_Enterprise_Total, 
-                      Beijing_Output_Share = Beijing_Output / National_Output_Total, 
-                      Tianjin_Enterprise_Share = Tianjin_Enterprise / National_Enterprise_Total, 
-                      Tianjin_Output_Share = Tianjin_Output / National_Output_Total, 
-                      Hebei_Enterprise_Share = Hebei_Enterprise / National_Enterprise_Total, 
-                      Hebei_Output_Share = Hebei_Output / National_Output_Total)
+# adds shares of total columns for output and enteprise for 3 provinces
+china_data3 <- mutate(china_data2,
+  Beijing_Enterprise_Share = Beijing_Enterprise / National_Enterprise_Total,
+  Beijing_Output_Share = Beijing_Output / National_Output_Total,
+  Tianjin_Enterprise_Share = Tianjin_Enterprise / National_Enterprise_Total,
+  Tianjin_Output_Share = Tianjin_Output / National_Output_Total,
+  Hebei_Enterprise_Share = Hebei_Enterprise / National_Enterprise_Total,
+  Hebei_Output_Share = Hebei_Output / National_Output_Total
+)
 
-#creates line graphs comparing the shares of total columns for enterprise
-ggplot(data=china_data3, aes(x=Year)) +
-  geom_line(mapping = aes(y=Beijing_Enterprise_Share, color="Beijing Enterprise Share")) +
-  geom_line(mapping = aes(y=Tianjin_Enterprise_Share, color="Tianjin Enterprise Share")) +
-  geom_line(mapping = aes(y=Hebei_Enterprise_Share, color="Hebei Enterprise Share")) +
+# creates line graphs comparing the shares of total columns for enterprise
+ggplot(data = china_data3, aes(x = Year)) +
+  geom_line(mapping = aes(y = Beijing_Enterprise_Share, color = "Beijing Enterprise Share")) +
+  geom_line(mapping = aes(y = Tianjin_Enterprise_Share, color = "Tianjin Enterprise Share")) +
+  geom_line(mapping = aes(y = Hebei_Enterprise_Share, color = "Hebei Enterprise Share")) +
   ggtitle("Enterprise Shares of Total") +
-  labs(y="Enterprise", colour = "Provinces")
-
+  labs(y = "Enterprise", colour = "Provinces")
 ```
 
   For the Enterprise Shares of Total graph, it represents data for three provinces for the number of enterprises they had over the years compared to the national enterprise total. For Beijing, they made up a larger portion of the total number of enterprises in the country but the amount fell off dramatically over the years. Tianjin remained pretty low but followed the same pattern as Beijing after ~1950. Hebei started off low but increased after ~1950 and has remained ahead of Beijing and Tianjin with the number of enteprises they have compared to the national total.
   
 ```{r echo = FALSE, warning = FALSE}
-#creates line graphs comparing the shares of total columns for output
-ggplot(data=china_data3, aes(x=Year)) +
-  geom_line(mapping = aes(y=Beijing_Output_Share, color="Beijing Output Share")) +
-  geom_line(mapping = aes(y=Tianjin_Output_Share, color="Tianjin Output Share")) +
-  geom_line(mapping = aes(y=Hebei_Output_Share, color="Hebei Output Share")) +
+# creates line graphs comparing the shares of total columns for output
+ggplot(data = china_data3, aes(x = Year)) +
+  geom_line(mapping = aes(y = Beijing_Output_Share, color = "Beijing Output Share")) +
+  geom_line(mapping = aes(y = Tianjin_Output_Share, color = "Tianjin Output Share")) +
+  geom_line(mapping = aes(y = Hebei_Output_Share, color = "Hebei Output Share")) +
   ggtitle("Output Shares of Total") +
-  labs(y="Output", colour = "Provinces")
+  labs(y = "Output", colour = "Provinces")
 ```
 
   For the Output Shares of Total graph, it represents data for the same three provicnes but it compares their output to the national output total. For all three provinces, their output compared to the national total is very low until around 2010 when they all spike up dramatically. Comapring the outputs to the previous graph with the enterprises, The amount of enterprises seems to have little correlation with the amount of output each province has. For Beijing, their enterprise per share was very high at the start and went down but their output stayed low throughout that time. At around 2000, the enterprise per share for Tianjin and Beijing starts to decrease but despite that, their output share increases dramatically. For Heibei, their enterprise share actually increases during that time but their output share is less compared to Beijing and Tianjin. This could be due to low output per enterprise until after 2010 but the output per enterprise for Heibei did not increase at the same rate as Beijing and Tianjin. 
   
 ###3.3
 ```{r echo = FALSE, warning = FALSE}
-#creates columns for output per enterprise
-china_output_per_enterprise_data <- mutate(china_data2, 
-                                           Beijing_Output_Per_Enterprise = Beijing_Output / Beijing_Enterprise, 
-                                           Tianjin_Output_Per_Enterprise = Tianjin_Output / Tianjin_Enterprise,
-                                           Hebei_Output_Per_Enterprise = Hebei_Output / Hebei_Enterprise)
+# creates columns for output per enterprise
+china_output_per_enterprise_data <- mutate(china_data2,
+  Beijing_Output_Per_Enterprise = Beijing_Output / Beijing_Enterprise,
+  Tianjin_Output_Per_Enterprise = Tianjin_Output / Tianjin_Enterprise,
+  Hebei_Output_Per_Enterprise = Hebei_Output / Hebei_Enterprise
+)
 
-#creates graph for output per enterprise
+# creates graph for output per enterprise
 ggplot(data = china_output_per_enterprise_data, aes(x = Year)) +
   geom_line(mapping = aes(y = Beijing_Output_Per_Enterprise, color = "Beijing Output Per Enterprise")) +
   geom_line(mapping = aes(y = Tianjin_Output_Per_Enterprise, color = "Tianjin Output Per Enterprise")) +
@@ -201,12 +203,54 @@ ggplot(data = na.omit(ratio_df), aes(x = Year)) +
   geom_line(mapping = aes(y = Liaoning_Output, color = "Liaoning's Output")) +
   ggtitle("Province Output") +
   labs(y = "Output", colour = "Provinces")
-
 ```
 
   From the graphs above, we can see that Guangdong and Shandong's output lines follow closely together as it both rises significantly more than Liaoning's. Similarly, although all three provinces are increasing in population growth, Liaoning's population starts to slow down in the 2000's while Guangdong and Shandong's population not only follows closely, but also intersects near 2005. These similarities of ratio in comparison to Liaoning might have a correlation in that that output growth trends can be reflected in the population growth trends for all three provinces.
 
-### 3.5
-```{r, echo = FALSE, warning = FALSE }
+###3.6 Aggregated Data  
 
+Data is aggregated for each region in China.
+
+* North China - Beijing, Tianjin, Hebei, Shanxi, Inner Mongolia
+* Northeast China - Liaoning, Jilin, Heilongjiang
+* East China - Shanghai, Jiangsu, Zhejiang, Anhui, Fujian, Jiangxi, Shandong
+* South Central China - Henan, Hubei, Hunan, Guangdong, Guangxi, Hainan
+* Southwest China - Chongqing, Sichuan, Guizhou, Yunnan, Tibet, 
+* Northwest China - Shaanxi, Gansu, Qinghai, Ningxia, Xinjiang
+
+The tables below show the last 5 rows of the table (most recent data).
+
+**Aggregated Enterprise Data** 
+
+```{r, echo = FALSE, warning = FALSE}
+# group enterprise and output by region. adds new columns
+regions_aggregated_data <- mutate(na.omit(china_output_per_enterprise_data),
+  North_China_Enterprise = Beijing_Enterprise + Tianjin_Enterprise + Hebei_Enterprise + Shanxi_Enterprise + InnerMongolia_Enterprise,
+  North_China_Output = Beijing_Output + Tianjin_Output + Hebei_Output + Shanxi_Output + InnerMongolia_Output,
+  NorthEast_China_Enterprise = Liaoning_Enterprise + Jilin_Enterprise + Heilongjiang_Enterprise, NorthEast_China_Output = Liaoning_Output + Jilin_Output + Heilongjiang_Output,
+  East_China_Enterprise = Shanghai_Enterprise + Jiangsu_Enterprise + Zhejiang_Enterprise + Anhui_Enterprise + Fujian_Enterprise + Jiangxi_Enterprise + Shandong_Enterprise,
+  East_China_Output = Shanghai_Output + Jiangsu_Output + Zhejiang_Output + Anhui_Output + Fujian_Output + Jiangxi_Output + Shandong_Output,
+  SouthCentral_China_Enterprise = Henan_Enterprise + Hubei_Enterprise + Hunan_Enterprises + Guangdong_Enterprise + Guangxi_Enterprise + Hainan_Enterprise,
+  SouthCentral_China_Output = Henan_Output + Hubei_Output + Hunan_Output + Guangdong_Output + Guangxi_Output + Hainan_Output,
+  Southwest_China_Enterprise = Chongqing_Enterprise + Sichuan_Enterprise + Guizhou_Enterprise + Yunnan_Enterprise + Tibet_Enterprise,
+  Southwest_China_Output = Chongqing_Output + Sichuan_Output + Guizhou_Output + Yunnan_Output + Tibet_Output,
+  Northwest_China_Enterprise = Shaanxi_Enterprise + Gansu_Enterprise + Qinghai_Enterprise + Ningxia_Enterprise + Xinjiang_Enterprise,
+  Northwest_China_Output = Shaanxi_Output + Gansu_Output + Qinghai_Output + Ningxia_Output + Xinjiang_Output
+)
+
+# selects the aggregated data for enterprise and creates a new dataframe from it.
+regions_aggregated_enterprise_data <- select(regions_aggregated_data, contains("Year"), contains("China_Enterprise"))
+# selects the aggregated data for output and creates a new dataframe from it
+regions_aggregated_output_data <- select(regions_aggregated_data, contains("Year"), contains("China_Output"))
+# displays that last 5 rows of the aggregated enterprise data using kable to style it
+kable(tail(regions_aggregated_enterprise_data, 5)) %>%
+  kable_styling()
+```
+
+**Aggregated Output Data**
+
+```{r, echo = FALSE, warning = FALSE}
+# displays that last 5 rows of the aggregated output data using kable to style it
+kable(tail(regions_aggregated_output_data, 5)) %>%
+  kable_styling()
 ```
