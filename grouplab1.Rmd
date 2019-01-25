@@ -52,6 +52,124 @@ China obtains national statistics from the Chinese Census that occurs every 5 ye
 
 ## Part 2 - Exploring and Visualizing the Data {.tabset .tabset-fade}
 
+### 2.1 Exploring the Data
+Across all the provinces, there was an increase in output from 1949 to 2017. What was very interesting was that around 1990, the output across all provinces increased at a seemingly exponential rate. Where in 1949, the output of Beijing was 1.47 to 625.90 in 1990 and 18087.27 in 2016. It is important to note that 1950 started the era of American consumerism and producing goods through outsourcing labor and factories in foreign countries, such as China. This may explain the trend why so the output so dramatically increased. 
+
+One interesting thing was that the number of enterprises, take Beijing for example, was very high in 1949 at 21055 and over time increased, but then dramatically decreased to 3574 in 1956. As our professor mentioned, that over time certain enterprises got acquired and others merged which may be reflective of the trend in Beijing. 
+
+Additionally, as you look through the dataset, you’ll notice that there is quite a bit of missing data that are denoted as “NA”. In a way, this makes it more difficult to visualize the data. For instance, certain graphs will have missing data points that can potentially cause some misinterpretation and/or misrepresentation of the data. One example of this is in the Output by Province (2000-2017) visualization. You can clearly see gaps between the lines. 
+
+### 2.2 Visualizing the Data
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Use select library
+library(tidyverse)
+
+# Read input csv file
+China_EO_49to17 <- read.csv("China_EO_49to17.csv", fileEncoding = "latin1")
+
+# Change Year values from factors to integers
+Year <- seq(from = 1949, to = 2017)
+China_EO_49to17$Year <- Year
+
+# Create a histogram of Beijing Enterprise Count data
+ggplot(data = China_EO_49to17, aes(x = Year, y = Beijing_Enterprise)) + geom_histogram(stat="identity", width=.5, fill="tomato3") + 
+  labs(title="Beijing Enterprise Count", 
+       subtitle="Year vs Count, 1949-2017") + labs(x = "Year", y = "Number of Enterprises")
+
+# Create a histogram of Beijing Enterprise Output data
+ggplot(data = China_EO_49to17, aes(x = Year, y = Beijing_Output)) + geom_histogram(stat="identity", width=.5, fill="tomato3") + 
+  labs(title="Beijing Enterprise Output", 
+       subtitle="Year vs Output, 1949-2017") + labs(x = "Year", y = "Total Output from Enterprises")
+
+# Create a points and line graph of count data across various provinces (1949-2017)
+ggplot(data = China_EO_49to17) + 
+  geom_point(mapping = aes(x = Year, y = Beijing_Enterprise, colour="Beijing")) + 
+  geom_line(mapping = aes(x = Year, y = Beijing_Enterprise,colour="Beijing")) + 
+  geom_point(mapping = aes(x = Year, y = Tianjin_Enterprise,colour="Tianjin")) + 
+  geom_line(mapping = aes(x = Year, y = Tianjin_Enterprise,colour="Tianjin")) + 
+  geom_point(mapping = aes(x = Year, y = Hebei_Enterprise,colour="Hebei")) + 
+  geom_line(mapping = aes(x = Year, y = Hebei_Enterprise,color="Hebei")) + 
+  geom_point(mapping = aes(x = Year, y = Shanxi_Enterprise,colour="Shanxi")) + 
+  geom_line(mapping = aes(x = Year, y = Shanxi_Enterprise,colour="Shanxi")) + 
+  geom_point(mapping = aes(x = Year, y = Liaoning_Enterprise, colour="Liaoning")) + 
+  geom_line(mapping = aes(x = Year, y = Liaoning_Enterprise,colour="Liaoning")) + 
+  geom_point(mapping = aes(x = Year, y = Jilin_Enterprise, colour="Jilin")) + 
+  geom_line(mapping = aes(x = Year, y = Jilin_Enterprise,colour="Jilin")) + 
+  geom_point(mapping = aes(x = Year, y = Heilongjiang_Enterprise,colour="Heilongjiang")) + 
+  geom_line(mapping = aes(x = Year, y = Heilongjiang_Enterprise,colour="Heilongjiang")) + 
+  geom_point(mapping = aes(x = Year, y = Shanghai_Enterprise, colour="Shanghai")) + 
+  geom_line(mapping = aes(x = Year, y = Shanghai_Enterprise, colour="Shanghai")) + 
+  labs(title="Enterprise Count By Province", subtitle="Year vs Count, 1949-2017") + 
+  labs(x = "Year", y = "Total Count of Enterprises", colour = "Provinces")
+
+# Create a points and line graph of output data across various provinces (1949-2017)
+ggplot(data = China_EO_49to17) + 
+  geom_point(mapping = aes(x = Year, y = Beijing_Output, colour="Beijing")) + 
+  geom_line(mapping = aes(x = Year, y = Beijing_Output,colour="Beijing")) + 
+  geom_point(mapping = aes(x = Year, y = Tianjin_Output,colour="Tianjin")) + 
+  geom_line(mapping = aes(x = Year, y = Tianjin_Output,colour="Tianjin")) + 
+  geom_point(mapping = aes(x = Year, y = Hebei_Output,colour="Hebei")) + 
+  geom_line(mapping = aes(x = Year, y = Hebei_Output,color="Hebei")) + 
+  geom_point(mapping = aes(x = Year, y = Shanxi_Output,colour="Shanxi")) + 
+  geom_line(mapping = aes(x = Year, y = Shanxi_Output,colour="Shanxi")) + 
+  geom_point(mapping = aes(x = Year, y = Liaoning_Output, colour="Liaoning")) + 
+  geom_line(mapping = aes(x = Year, y = Liaoning_Output,colour="Liaoning")) + 
+  geom_point(mapping = aes(x = Year, y = Jilin_Output, colour="Jilin")) + 
+  geom_line(mapping = aes(x = Year, y = Jilin_Output,colour="Jilin")) + 
+  geom_point(mapping = aes(x = Year, y = Heilongjiang_Output,colour="Heilongjiang")) + 
+  geom_line(mapping = aes(x = Year, y = Heilongjiang_Output,colour="Heilongjiang")) + 
+  geom_point(mapping = aes(x = Year, y = Shanghai_Output, colour="Shanghai")) + 
+  geom_line(mapping = aes(x = Year, y = Shanghai_Output, colour="Shanghai")) + 
+  labs(title="Output By Province", subtitle="Year vs Output, 1949-2017") + 
+  labs(x = "Year", y = "Total Output from Enterprises", colour = "Provinces")
+
+# Filter Year to be between 2000 and 2017
+China_EO_49to17_2017 <- filter(China_EO_49to17, Year >= 2010 & Year <= 2017)
+
+# Create a points and line graph of count data across various provinces (2000-2017)
+ggplot(data = China_EO_49to17_2017) + 
+  geom_point(mapping = aes(x = Year, y = Beijing_Enterprise, colour="Beijing")) + 
+  geom_line(mapping = aes(x = Year, y = Beijing_Enterprise,colour="Beijing")) + 
+  geom_point(mapping = aes(x = Year, y = Tianjin_Enterprise,colour="Tianjin")) + 
+  geom_line(mapping = aes(x = Year, y = Tianjin_Enterprise,colour="Tianjin")) + 
+  geom_point(mapping = aes(x = Year, y = Hebei_Enterprise,colour="Hebei")) + 
+  geom_line(mapping = aes(x = Year, y = Hebei_Enterprise,color="Hebei")) + 
+  geom_point(mapping = aes(x = Year, y = Shanxi_Enterprise,colour="Shanxi")) + 
+  geom_line(mapping = aes(x = Year, y = Shanxi_Enterprise,colour="Shanxi")) + 
+  geom_point(mapping = aes(x = Year, y = Liaoning_Enterprise, colour="Liaoning")) + 
+  geom_line(mapping = aes(x = Year, y = Liaoning_Enterprise,colour="Liaoning")) + 
+  geom_point(mapping = aes(x = Year, y = Jilin_Enterprise, colour="Jilin")) + 
+  geom_line(mapping = aes(x = Year, y = Jilin_Enterprise,colour="Jilin")) + 
+  geom_point(mapping = aes(x = Year, y = Heilongjiang_Enterprise,colour="Heilongjiang")) + 
+  geom_line(mapping = aes(x = Year, y = Heilongjiang_Enterprise,colour="Heilongjiang")) + 
+  geom_point(mapping = aes(x = Year, y = Shanghai_Enterprise, colour="Shanghai")) + 
+  geom_line(mapping = aes(x = Year, y = Shanghai_Enterprise, colour="Shanghai")) + 
+  labs(title="Enterprise Count By Province", subtitle="Year vs Count, 2000-2017") + 
+  labs(x = "Year", y = "Total Count of Enterprises", colour = "Provinces")
+
+# Create a points and line graph of output data across various provinces (2000-2017)
+ggplot(data = China_EO_49to17_2017) + 
+  geom_point(mapping = aes(x = Year, y = Beijing_Output, colour="Beijing")) + 
+  geom_line(mapping = aes(x = Year, y = Beijing_Output,colour="Beijing")) + 
+  geom_point(mapping = aes(x = Year, y = Tianjin_Output,colour="Tianjin")) + 
+  geom_line(mapping = aes(x = Year, y = Tianjin_Output,colour="Tianjin")) + 
+  geom_point(mapping = aes(x = Year, y = Hebei_Output,colour="Hebei")) + 
+  geom_line(mapping = aes(x = Year, y = Hebei_Output,color="Hebei")) + 
+  geom_point(mapping = aes(x = Year, y = Shanxi_Output,colour="Shanxi")) + 
+  geom_line(mapping = aes(x = Year, y = Shanxi_Output,colour="Shanxi")) + 
+  geom_point(mapping = aes(x = Year, y = Liaoning_Output, colour="Liaoning")) + 
+  geom_line(mapping = aes(x = Year, y = Liaoning_Output,colour="Liaoning")) + 
+  geom_point(mapping = aes(x = Year, y = Jilin_Output, colour="Jilin")) + 
+  geom_line(mapping = aes(x = Year, y = Jilin_Output,colour="Jilin")) + 
+  geom_point(mapping = aes(x = Year, y = Heilongjiang_Output,colour="Heilongjiang")) + 
+  geom_line(mapping = aes(x = Year, y = Heilongjiang_Output,colour="Heilongjiang")) + 
+  geom_point(mapping = aes(x = Year, y = Shanghai_Output, colour="Shanghai")) + 
+  geom_line(mapping = aes(x = Year, y = Shanghai_Output, colour="Shanghai")) + 
+  labs(title="Output By Province", subtitle="Year vs Output, 2000-2017") + 
+  labs(x = "Year", y = "Total Output from Enterprises", colour = "Provinces")
+```
+
 ## Part 3 - Modifying the Data {.tabset .tabset-fade}
 
 ###3.1 Output Ratios
