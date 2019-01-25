@@ -58,13 +58,6 @@ One interesting thing was that the number of enterprises, take Beijing for examp
 
 Additionally, as you look through the dataset, you’ll notice that there is quite a bit of missing data that are denoted as “NA”. In a way, this makes it more difficult to visualize the data. For instance, certain graphs will have missing data points that can potentially cause some misinterpretation and/or misrepresentation of the data. One example of this is in the Output by Province (2000-2017) visualization. You can clearly see gaps between the lines. 
 
-### 2.1 Exploring the Data
-Across all the provinces, there was an increase in output from 1949 to 2017. What was very interesting was that around 1990, the output across all provinces increased at a seemingly exponential rate. Where in 1949, the output of Beijing was 1.47 to 625.90 in 1990 and 18087.27 in 2016. It is important to note that 1950 started the era of American consumerism and producing goods through outsourcing labor and factories in foreign countries, such as China. This may explain the trend why so the output so dramatically increased. 
-
-One interesting thing was that the number of enterprises, take Beijing for example, was very high in 1949 at 21055 and over time increased, but then dramatically decreased to 3574 in 1956. As our professor mentioned, that over time certain enterprises got acquired and others merged which may be reflective of the trend in Beijing. 
-
-Additionally, as you look through the dataset, you’ll notice that there is quite a bit of missing data that are denoted as “NA”. In a way, this makes it more difficult to visualize the data. For instance, certain graphs will have missing data points that can potentially cause some misinterpretation and/or misrepresentation of the data. One example of this is in the Output by Province (2000-2017) visualization. You can clearly see gaps between the lines. 
-
 ### 2.2 Visualizing the Data
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
