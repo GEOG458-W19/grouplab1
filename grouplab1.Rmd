@@ -9,6 +9,8 @@ output: html_document
 library(tidyverse)
 library(dplyr)
 library(tibble)
+library(kableExtra)#for dataframe visualization
+options(warn=-1)#supresses warnings
 knitr::opts_chunk$set(echo = TRUE)
 
 # Read in the dataset
@@ -184,5 +186,51 @@ plot(population$Year, population$Total_Permanent_Population_Year_End_10000_Perso
   legend("topleft", legend = c("Guangdong", "Shandong"), col = c("red", "blue"))
 
 ```
+###3.6 Aggregated Data  
 
+Data is aggregated for each region in China.
+
+* North China - Beijing, Tianjin, Hebei, Shanxi, Inner Mongolia
+* Northeast China - Liaoning, Jilin, Heilongjiang
+* East China - Shanghai, Jiangsu, Zhejiang, Anhui, Fujian, Jiangxi, Shandong
+* South Central China - Henan, Hubei, Hunan, Guangdong, Guangxi, Hainan
+* Southwest China - Chongqing, Sichuan, Guizhou, Yunnan, Tibet, 
+* Northwest China - Shaanxi, Gansu, Qinghai, Ningxia, Xinjiang
+
+The tables below show the last 5 rows of the table(most recent data).
+
+**Aggregated Enterprise Data** 
+
+```{r}
+#group enterprise and output by region. adds new columns
+regions_aggregated_data <- mutate(na.omit(china_output_per_enterprise_data), North_China_Enterprise=Beijing_Enterprise+Tianjin_Enterprise+Hebei_Enterprise+Shanxi_Enterprise+InnerMongolia_Enterprise,
+North_China_Output=Beijing_Output+Tianjin_Output+Hebei_Output+Shanxi_Output+InnerMongolia_Output, 
+NorthEast_China_Enterprise=Liaoning_Enterprise+Jilin_Enterprise+Heilongjiang_Enterprise, NorthEast_China_Output=Liaoning_Output+Jilin_Output+Heilongjiang_Output,
+East_China_Enterprise=Shanghai_Enterprise+Jiangsu_Enterprise+Zhejiang_Enterprise+Anhui_Enterprise+Fujian_Enterprise+Jiangxi_Enterprise+Shandong_Enterprise,
+East_China_Output=Shanghai_Output+Jiangsu_Output+Zhejiang_Output+Anhui_Output+Fujian_Output+Jiangxi_Output+Shandong_Output,
+SouthCentral_China_Enterprise=Henan_Enterprise+Hubei_Enterprise+Hunan_Enterprises+Guangdong_Enterprise+Guangxi_Enterprise+Hainan_Enterprise,
+SouthCentral_China_Output=Henan_Output+Hubei_Output+Hunan_Output+Guangdong_Output+Guangxi_Output+Hainan_Output,
+Southwest_China_Enterprise=Chongqing_Enterprise+Sichuan_Enterprise+Guizhou_Enterprise+Yunnan_Enterprise+Tibet_Enterprise,
+Southwest_China_Output=Chongqing_Output+Sichuan_Output+Guizhou_Output+Yunnan_Output+Tibet_Output,
+Northwest_China_Enterprise=Shaanxi_Enterprise+Gansu_Enterprise+Qinghai_Enterprise+Ningxia_Enterprise+Xinjiang_Enterprise,
+Northwest_China_Output=Shaanxi_Output+Gansu_Output+Qinghai_Output+Ningxia_Output+Xinjiang_Output
+)
+
+#selects teh aggregated data for enterprise and creates a new dataframe from it. 
+regions_aggregated_enterprise_data <- select(regions_aggregated_data, contains('Year'),contains('China_Enterprise'))
+#selects the aggregated data for output and creates a new dataframe from it
+regions_aggregated_output_data <- select(regions_aggregated_data, contains('Year'), contains('China_Output')) 
+#displays that last 5 rows of the aggregated enterprise data using kable to style it
+kable(tail(regions_aggregated_enterprise_data,5)) %>%
+  kable_styling()
+
+```
+
+**Aggregated Output Data**
+
+```{r}
+#displays that last 5 rows of the aggregated output data using kable to style it
+kable(tail(regions_aggregated_output_data,5)) %>%
+  kable_styling()
+```
 
