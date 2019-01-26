@@ -37,7 +37,7 @@ Cities such as Beijing, Shanghai, Tianjin, and Chongqing are municipalities.
 Looking deeper into the dataset, some readers may find that there are regions or locations in China that are missing off of this dataset. Some of those places include Taiwan, Hong Kong, and Macao. This stems from the "One Country, Two Systems" plan China made in 1984. China deemed that regions that operated independently before this time, would cease to be independent regions, and fall under the Chinese borders. However, Macao and Hong Kong were capitalist regions that contradicted China's socialist system. Therefore, these would fall under Chinese soverignty, and be deemed as Special Administrative Regions. These regions social, economic, legal systems, and way of life would remain unchanged, it would only fall within Chinese territory ( [One Country, Two Systems](http://www.china.org.cn/english/features/dengxiaoping/103372.htm)). The difference in systems results in statistics from these locations to be not in the same dataset as the rest of China. Also, it wasn't until China's 2010 Census for data to be collected and hosted from China. You can find data on these Special Administrative Regions on the [National Bureau of Statistics of China](http://www.stats.gov.cn/english/Statisticaldata/AnnualData/). When searching for data, Speical Administrative Regions will not be with the rest of China's statistics, they will be located at the end of the data book in Chapters 26 (Hong Kong), 27 (Macao), 28 (Taiwan).
 
 ###Issues with Chinese Statistics
-China obtains national statistics from the Chinese Census that occurs every 5 years. It is a large undertaking that "employs 3 million people, counted more than 8 million enterprises and estimated a GDP of almost 59 trillion yuan ($9.5 trillion)". However with this many people working on such a large venture, there are many scandals surrounding the census on the basis of incorrect data being collected. The Chinese National Bureau of Statistics "draw on the data reported directly to it by large enterprises (those with annual revenues of over 20 million yuan). But it remains largely in the dark about smaller firms." A majority of these large companies are owned-by the state, which can lead to misrepresentation when it comes time to submitting statistics. Issues also arrive when it comes to the pure size of China, "industrial profits recently reported by large enterprises were lower than reported last year because some under-sized and double-counted firms were purged from the sample". The Census is also a very political subject. This data become public to all outside governments, so the census is a representation of how the country is doing. This means that "census-takers succumb to political pressure, faking information" to try and bump up the statistics of their own country ( [The critics it deserves; Free Exchange](https://www.economist.com/finance-and-economics/2018/07/07/chinas-statistics-are-bad-many-criticisms-of-them-are-worse)). All of these considered, data collected off of the Chinese National Bureau of Statistics should be double checked for accuracy if possible due to multiple reports of faking data. Especially within the more recent times, data has been reported to be faked from the 90s and even more recently from the 2008 Financial Crisis to present day ( [Hsu, Sara](www.forbes.com/sites/sarahsu/2017/01/23/chinas-gdp-numbers-can-we-trust-the-data/#50ccad006577)). Furthermore, private firms who are less likely to bend to political pressure are a key source to go to for statistics. For example, the All China Data Center is a firm who aggregates data from various sources to ensure the most accurate data available.
+China obtains national statistics from the Chinese Census that occurs every 5 years. It is a large undertaking that "employs 3 million people, counted more than 8 million enterprises and estimated a GDP of almost 59 trillion yuan ($9.5 trillion)". However with this many people working on such a large venture, there are many scandals surrounding the census on the basis of incorrect data being collected. The Chinese National Bureau of Statistics "draw on the data reported directly to it by large enterprises (those with annual revenues of over 20 million yuan). But it remains largely in the dark about smaller firms." A majority of these large companies are owned by the state, which can lead to misrepresentation when it comes time to submitting statistics. Issues also arrive when it comes to the pure size of China, "industrial profits recently reported by large enterprises were lower than reported last year because some under-sized and double-counted firms were purged from the sample". The Census is also a very political subject. This data become public to all outside governments, so the census is a representation of how the country is doing. This means that "census-takers succumb to political pressure, faking information" to try and bump up the statistics of their own country ( [The critics it deserves; Free Exchange](https://www.economist.com/finance-and-economics/2018/07/07/chinas-statistics-are-bad-many-criticisms-of-them-are-worse)). All of these considered, data collected off of the Chinese National Bureau of Statistics should be double checked for accuracy if possible due to multiple reports of faking data. Especially within the more recent times, data has been reported to be faked from the 90s and even more recently from the 2008 Financial Crisis to present day ( [Hsu, Sara](www.forbes.com/sites/sarahsu/2017/01/23/chinas-gdp-numbers-can-we-trust-the-data/#50ccad006577)). Furthermore, private firms who are less likely to bend to political pressure are a key source to go to for statistics. For example, the All China Data Center is a firm who aggregates data from various sources to ensure the most accurate data available.
 
 ###Citations
 ["13.2.2.1 Green Investment of Four Municipalities Directly Under the Jurisdiction of the Central Government." China Green Development Index Report 2011, by Xiaoxi Li and Jiancheng Pan, Springer Science & Business Media, 2012, p. 337.](https://books.google.com/books?id=-BZaKxYWykQC&pg=PA337&lpg=PA337&dq=china+municipalities&source=bl&ots=6teLWLv8F2&sig=NtSbnqeIxGIWACvLwbE5XxrOUvo&hl=en&sa=X&ved=2ahUKEwjp7tTijfPfAhWO11QKHZI1CCs4FBDoATAIegQIABAB#v=onepage&q=Green%20Investment%20of%20Four%20Municipalities&f=false)
@@ -201,7 +201,10 @@ ggplot(data = na.omit(ratio_df), aes(x = Year)) +
   geom_line(aes(y = Output_Ratio_Liao_Guang, color = "Liaoning vs Guangdong Output Ratio")) +
   geom_line(aes(y = Output_Ratio_Shan_Guang, color = "Shandong vs Guangdong Output Ratio")) +
   geom_line(aes(y = Output_Ratio_Shang_Guang, color = "Shanghai vs Guangdong Output Ratio")) +
-  labs(y = "Output Ratio", colours = "Provinces") +
+  geom_point(aes(y = Output_Ratio_Liao_Guang, color = "Liaoning vs Guangdong Output Ratio")) +
+  geom_point(aes(y = Output_Ratio_Shan_Guang, color = "Shandong vs Guangdong Output Ratio")) +
+  geom_point(aes(y = Output_Ratio_Shang_Guang, color = "Shanghai vs Guangdong Output Ratio")) +
+  labs(y = "Output Ratio", colour = "Provinces") +
   ggtitle("Output Ratios of Provinces")
 
 recent_ratio_df <- ratio_df %>% filter(Year >= 1980)
@@ -211,6 +214,9 @@ ggplot(data = na.omit(recent_ratio_df), aes(x = Year)) +
   geom_line(aes(y = Output_Ratio_Liao_Guang, color = "Liaoning vs Guangdong Output Ratio")) +
   geom_line(aes(y = Output_Ratio_Shan_Guang, color = "Shandong vs Guangdong Output Ratio")) +
   geom_line(aes(y = Output_Ratio_Shang_Guang, color = "Shanghai vs Guangdong Output Ratio")) +
+  geom_point(aes(y = Output_Ratio_Liao_Guang, color = "Liaoning vs Guangdong Output Ratio")) +
+  geom_point(aes(y = Output_Ratio_Shan_Guang, color = "Shandong vs Guangdong Output Ratio")) +
+  geom_point(aes(y = Output_Ratio_Shang_Guang, color = "Shanghai vs Guangdong Output Ratio")) + 
   labs(y = "Output Ratio", colour = "Provinces") +
   ggtitle("A Closer Look: Output Ratios of Provinces (1980 to 2011)")
 
@@ -308,7 +314,6 @@ population <- china_pop %>% left_join(shandong_pop, by = "Year") %>% left_join(g
 
 # Graph the province populations
 ggplot(data = population, aes(x = Year)) +
-  # geom_line(mapping = aes(y = Total_Permanent_Population_Year_End_10000_Persons, color = "China's Total Population")) +
   geom_line(mapping = aes(y = Total_Permanent_Population_Year_End_10000_Persons_Shandong, color = "Shandong's Population")) +
   geom_line(mapping = aes(y = Total_Permanent_Population_Year_End_10000_Persons_Guangdong, color = "Guangdong's Population")) +
   geom_line(mapping = aes(y = Total_Permanent_Population_Year_End_10000_Persons_Liaoning, color = "Liaoning's Population")) +
@@ -327,20 +332,32 @@ ggplot(data = na.omit(ratio_df), aes(x = Year)) +
   From the graphs above, we can see that Guangdong and Shandong's output lines follow closely together as it both rises significantly more than Liaoning's. Similarly, although all three provinces are increasing in population growth, Liaoning's population starts to slow down in the 2000's while Guangdong and Shandong's population not only follows closely, but also intersects near 2005. These similarities of ratio in comparison to Liaoning might have a correlation in that output growth trends can be reflected in the population growth trends for all three provinces.
 
 ### 3.5 Relationships
+  Starting out with, the first chart below graphs all the enterprise values of each province from 1949 to 2017. We can notice that although Shandong and Guangxi starts out at the highest, they both drop drastically around 1955. As we take a closer look in the 2000's, notice that the provinces of Guangdong, Jiangsu, Shandong, and Zhejiang take a sudden rise more than the other provinces with enterprise values that stay below 25,000. This sudden increase in contrast with the other provinces might be due to their locations with one another as visualized in the map close up.
 ```{r, echo = FALSE, warning = FALSE}
 # Enterprise data
 enterprise <- data %>% select("Year", contains("Enterprise"))
+
 # Format enterprise data to be easily graphable
 new_enterprise <- enterprise %>% melt(id.vars = "Year", measure.vars = colnames(enterprise)[2:32])
-
-
-
 ggplot(new_enterprise, aes(x = Year, y = value, color = gsub("_Enterprise", " ", variable))) + 
   geom_line() + 
   ggtitle("Province Enterprises") + 
   labs(y = "Enterprise", colour = "Provinces")
 
+# Narrow down the graph to after the 2000s and more than 25,000
+narrow_enter <- new_enterprise %>% filter(Year >= 1995, 
+                                          variable == "Guangdong_Enterprise" |
+                                          variable == "Jiangsu_Enterprise" |
+                                          variable == "Shandong_Enterprise" |
+                                          variable == "Zhejiang_Enterprise") 
+ggplot(narrow_enter, aes(x = Year, y = value, color = gsub("_Enterprise", " ", variable))) + 
+  geom_line() + 
+  ggtitle("Province Enterprises (1995 to 2017)") + 
+  labs(y = "Enterprise", colour = "Provinces")
+
 ```
+
+The population of these provinces could also have correlation in the sudden increase in enterprise growth. ![](map.PNG)
 
 ### 3.6 Aggregate  
 
